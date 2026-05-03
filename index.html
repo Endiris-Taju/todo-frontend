@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>To do list</title>
+    <link rel="stylesheet" href="/todolist.css">
+</head>
+<body>
+    <div class="app-container">
+<div class="header">
+    <p>Register day to day activity to Manage our Time</p>
+    <div class="todo-input-grid">
+        <input type="text" placeholder="Todo name" class="js-name-input  input-button">
+        <input type="date" class="js-due-date-input" >
+        <input type="time" class="js-start-time-input">
+        <input type="time" class="js-end-time-input">
+        <button class="add-button js-add-button">Add</button>
+    </div>
+    </div>
+   <div class="js-todo-list  todo-grid"></div>
+</div>
+   <script type="module" src="/todolist.js"></script> 
+</body>
+</html>
