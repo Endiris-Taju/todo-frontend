@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Smart Todo App</title>
+  <script type="module" crossorigin src="/assets/index-CTHZTUlt.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-ChJ_Ph0v.css">
+</head>
+<body>
+
+<!-- ================= AUTH SCREEN ================= -->
+<div class="auth-box" id="authBox">
+
+  <h1>Smart Todo</h1>
+
+  <!-- SIGNUP -->
+  <form id="signupForm" autocomplete="on">
+    <h2>Create account</h2>
+
+    <input 
+      id="signupEmail"
+      type="email"
+      placeholder="Email"
+      autocomplete="email"
+      required>
+
+    <input 
+      id="signupPassword"
+      type="password"
+      placeholder="Password"
+      autocomplete="new-password"
+      required>
+
+    <button type="submit">Signup</button>
+  </form>
+
+  <hr>
+
+  <!-- LOGIN -->
+  <form id="loginForm" autocomplete="on">
+    <h2>Welcome back</h2>
+
+    <input 
+      id="loginEmail"
+      type="email"
+      placeholder="Email"
+      autocomplete="email"
+      required>
+
+    <input 
+      id="loginPassword"
+      type="password"
+      placeholder="Password"
+      autocomplete="current-password"
+      required>
+
+    <button type="submit">Login</button>
+  </form>
+
+</div>
+
+<!-- ================= APP SCREEN ================= -->
+<div class="app-box" id="appBox" style="display:none">
+
+  <div class="app-container">
+
+    <!-- HEADER -->
+    <div class="header">
+      <h1>My Daily Planner</h1>
+      <button class="logout-btn">Logout</button>
+    </div>
+
+    <!-- ADD TODO -->
+    <div class="todo-input-grid">
+      <input class="js-name-input" placeholder="Task name">
+      <input type="date" class="js-due-date-input">
+      <input type="time" class="js-start-time-input">
+      <input type="time" class="js-end-time-input">
+      <button class="add-button js-add-button">Add Task</button>
+    </div>
+
+    <!-- TODO LIST -->
+    <div class="js-todo-list"></div>
+
+  </div>
+</div>
+
+<!-- JS -->
+
+</body>
+</html>

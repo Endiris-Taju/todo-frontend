@@ -34,9 +34,6 @@ function authHeaders() {
   };
 }
 
-// ===============================
-// UI SWITCH
-// ===============================
 function updateUI() {
   if (isLoggedIn()) {
     authBox.style.display = "none";
@@ -50,55 +47,6 @@ function updateUI() {
 
 updateUI();
 
-// ===============================
-// SIGNUP
-// ===============================
-async function signup() {
-  const email = document.querySelector(".signup-email").value;
-  const password = document.querySelector(".signup-password").value;
-
-  const res = await fetch(API_SIGNUP, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password })
-  });
-
-  const data = await res.json();
-
-  if (data.token) {
-    saveToken(data.token);
-    updateUI();
-  } else {
-    alert(data.error || "Signup failed");
-  }
-}
-
-// ===============================
-// LOGIN
-// ===============================
-async function login() {
-  const email = document.querySelector(".login-email").value;
-  const password = document.querySelector(".login-password").value;
-
-  const res = await fetch(API_LOGIN, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password })
-  });
-
-  const data = await res.json();
-
-  if (data.token) {
-    saveToken(data.token);
-    updateUI();
-  } else {
-    alert(data.error || "Login failed");
-  }
-}
-
-// ===============================
-// LOAD TODOS
-// ===============================
 async function loadTodos() {
   try {
     const res = await fetch(API_TODOS, {
@@ -126,9 +74,7 @@ async function loadTodos() {
   }
 }
 
-// ===============================
-// ADD TODO
-// ===============================
+
 async function addTodo() {
   const name = document.querySelector('.js-name-input').value.trim();
   const dueDate = document.querySelector('.js-due-date-input').value;
@@ -149,9 +95,7 @@ async function addTodo() {
   loadTodos();
 }
 
-// ===============================
-// DELETE TODO (FIXED)
-// ===============================
+
 async function deleteTodo(id) {
   await fetch(`${API_TODOS}/${id}`, {
     method: "DELETE",
@@ -161,9 +105,7 @@ async function deleteTodo(id) {
   loadTodos();
 }
 
-// ===============================
-// FORMAT HELPERS
-// ===============================
+
 function formatTime(time24) {
   if (!time24) return "";
 
@@ -179,9 +121,7 @@ function formatDate(dateStr) {
   return new Date(dateStr).toLocaleDateString();
 }
 
-// ===============================
-// RENDER
-// ===============================
+
 function renderTodoList() {
   let html = "";
 
@@ -205,42 +145,31 @@ function renderTodoList() {
 
   document.querySelector(".js-todo-list").innerHTML = html;
 }
-
 async function signup() {
   const email = document.getElementById("signupEmail").value;
   const password = document.getElementById("signupPassword").value;
 
-  const res = await fetch(API_SIGNUP, {
+  const res = await fetch(`${API_URL}/auth/signup`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password })
   });
 
   const data = await res.json();
-
-  if (data.token) {
-    saveToken(data.token);
-    updateUI();
-  } else {
-    alert(data.error || "Signup failed");
-  }
+  alert(data.message || data.error);
 }
+
 async function login() {
   const email = document.getElementById("loginEmail").value;
   const password = document.getElementById("loginPassword").value;
 
-  const res = await fetch(API_LOGIN, {
+  const res = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password })
   });
 
   const data = await res.json();
-
-  if (data.token) {
-    saveToken(data.token);
-    updateUI();
-  } else {
-    alert(data.error || "Login failed");
-  }
+  localStorage.setItem("token", data.token);
+  startApp();
 }
