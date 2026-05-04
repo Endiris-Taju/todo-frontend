@@ -1,173 +1,196 @@
+// ===============================
+// CONFIG
+// ===============================
+const API_BASE = "https://todo-backend-dlui.onrender.com";
+const API_TODOS = API_BASE + "/todos";
+const API_LOGIN = API_BASE + "/login";
+const API_SIGNUP = API_BASE + "/signup";
 
 let todoList = [];
-const API_URL = "https://todo-backend-dlui.onrender.com/todos";
-async function loadTodos(){
-  try {
-    const res = await fetch(API_URL);
-    const data = await res.json();
 
-    // safety check
-    if (!Array.isArray(data)) {
-      console.error("Backend error:", data);
-      todoList = [];
+// ===============================
+// AUTH HELPERS
+// ===============================
+function authHeaders() {
+  return {
+    "Content-Type": "application/json",
+    "Authorization": localStorage.getItem("token")
+  };
+}
+
+function saveToken(token){
+  localStorage.setItem("token", token);
+}
+
+function logout(){
+  localStorage.removeItem("token");
+  location.reload();
+}
+
+function isLoggedIn(){
+  return !!localStorage.getItem("token");
+}
+
+// ===============================
+// AUTH UI SWITCH
+// ===============================
+function updateAuthUI(){
+  const authBox = document.querySelector(".auth-box");
+  const appBox = document.querySelector(".app-box");
+
+  if(isLoggedIn()){
+    authBox.style.display = "none";
+    appBox.style.display = "block";
+    loadTodos();
+  }else{
+    authBox.style.display = "block";
+    appBox.style.display = "none";
+  }
+}
+
+updateAuthUI();
+
+// ===============================
+// SIGNUP
+// ===============================
+async function signup(){
+  const email = document.querySelector(".signup-email").value;
+  const password = document.querySelector(".signup-password").value;
+
+  const res = await fetch(API_SIGNUP,{
+    method:"POST",
+    headers:{ "Content-Type":"application/json"},
+    body: JSON.stringify({email,password})
+  });
+
+  const data = await res.json();
+
+  if(data.token){
+    saveToken(data.token);
+    updateAuthUI();
+  }else{
+    alert(data.error || "Signup failed");
+  }
+}
+
+// ===============================
+// LOGIN
+// ===============================
+async function login(){
+  const email = document.querySelector(".login-email").value;
+  const password = document.querySelector(".login-password").value;
+
+  const res = await fetch(API_LOGIN,{
+    method:"POST",
+    headers:{ "Content-Type":"application/json"},
+    body: JSON.stringify({email,password})
+  });
+
+  const data = await res.json();
+
+  if(data.token){
+    saveToken(data.token);
+    updateAuthUI();
+  }else{
+    alert(data.error || "Login failed");
+  }
+}
+
+// ===============================
+// LOAD TODOS
+// ===============================
+async function loadTodos(){
+  try{
+    const res = await fetch(API_TODOS,{ headers: authHeaders() });
+
+    if(res.status === 401){
+      logout();
       return;
     }
 
-    todoList = data;
+    todoList = await res.json();
     renderTodoList();
-
-  } catch (err) {
-    console.error("Fetch failed:", err);
-    todoList = [];
+  }catch(err){
+    console.error(err);
   }
 }
-loadTodos();
 
-function formatTime(time24) {
-  if (!time24) return "";   // prevents crash
+// ===============================
+// ADD TODO
+// ===============================
+async function addTodo(){
+  const name = document.querySelector('.js-name-input').value.trim();
+  const dueDate = document.querySelector('.js-due-date-input').value;
+  const startTime = document.querySelector('.js-start-time-input').value;
+  const endTime = document.querySelector('.js-end-time-input').value;
 
-  const [hour, minute] = time24.split(':');
+  if(!name || !dueDate || !startTime || !endTime){
+    alert("Fill all fields");
+    return;
+  }
+
+  await fetch(API_TODOS,{
+    method:"POST",
+    headers: authHeaders(),
+    body: JSON.stringify({name,dueDate,startTime,endTime})
+  });
+
+  loadTodos();
+}
+
+// ===============================
+// DELETE TODO
+// ===============================
+async function deleteTodo(id){
+  await fetch(API_TODOS+"/"+id,{
+    method:"DELETE",
+    headers: authHeaders()
+  });
+  loadTodos();
+}
+
+// ===============================
+// RENDER TODOS
+// ===============================
+function formatTime(time24){
+  const [hour,minute] = time24.split(':');
   const h = Number(hour);
-  const ampm = h >= 12 ? 'PM' : 'AM';
-  const hour12 = h % 12 || 12;
+  const ampm = h>=12?'PM':'AM';
+  const hour12 = h%12||12;
   return `${hour12}:${minute} ${ampm}`;
 }
 
-function formatDate(dateStr) {
-  const options = { year:'numeric', month:'short', day:'numeric' };
-  return new Date(dateStr).toLocaleDateString(undefined, options);
+function formatDate(dateStr){
+  return new Date(dateStr).toLocaleDateString();
 }
 
 function renderTodoList(){
-  let todoListHTML = '';
+  let html="";
 
   todoList.sort((a,b)=>{
     return new Date(`${a.dueDate}T${a.startTime}`) -
            new Date(`${b.dueDate}T${b.startTime}`);
   });
 
-  for (let task of todoList){
-
-  const todayTag = isToday(task.dueDate)
-    ? '<span class="today-task">TODAY</span>'
-    : "";
-    todoListHTML += `
+  for(const task of todoList){
+    html += `
       <div class="todo-row">
-
-        <div class="task-name">
-          <b>${task.name}</b> ${todayTag}
-        </div>
-
-        <div class="task-date">
-          ${formatDate(task.dueDate)}
-        </div>
-
-        <div class="start-time">
-          ${formatTime(task.startTime)}
-        </div>
-
-        <div class="end-time">
-          ${formatTime(task.endTime)}
-        </div>
-
-        <button class="delete-button" data-id="${task.id}">
-          Delete
-        </button>
-
+        <b>${task.name}</b>
+        ${formatDate(task.dueDate)}
+        ${formatTime(task.startTime)} - ${formatTime(task.endTime)}
+        <button onclick="deleteTodo(${task.id})">Delete</button>
       </div>
       <hr>
     `;
   }
-  document.querySelector('.js-todo-list').innerHTML = todoListHTML;
+
+  document.querySelector(".js-todo-list").innerHTML = html;
 }
 
-document.querySelector('.js-todo-list').addEventListener('click', async (e) => {
-  if (e.target.classList.contains('delete-button')) {
-    const id = e.target.dataset.id;
-
-    await fetch(`${API_URL}/${id}`, {
-      method: "DELETE"
-    });
-
-    loadTodos();
-  }
-});
-
-   document.querySelector('.js-add-button').addEventListener('click',()=>{
-    addTodo();
-   }) 
-function timeToMinutes(time){
-  const [h,m] = time.split(':').map(Number);
-  return h * 60 + m;
-}
-
-function hasTimeConflict(newTask){
-  const newStart = timeToMinutes(newTask.startTime);
-  const newEnd   = timeToMinutes(newTask.endTime);
-
-  for (let task of todoList){
-    if (task.dueDate !== newTask.dueDate) continue; // only same day
-
-    const existingStart = timeToMinutes(task.startTime);
-    const existingEnd   = timeToMinutes(task.endTime);
-
-    const overlap = newStart < existingEnd && newEnd > existingStart;
-    if (overlap) return true;
-  }
-
-  return false;
-}
-
-async function addTodo(){
-  const nameInput = document.querySelector('.js-name-input');
-  const dateInput = document.querySelector('.js-due-date-input');
-  const startInput = document.querySelector('.js-start-time-input');
-  const endInput = document.querySelector('.js-end-time-input');
-
-  const name = nameInput.value.trim();
-  const dueDate = dateInput.value;
-  const startTime = startInput.value;
-  const endTime = endInput.value;
-
-  if (!name || !dueDate || !startTime || !endTime) {
-    alert("Please fill all fields");
-    return;
-  }
-
-  if (timeToMinutes(startTime) >= timeToMinutes(endTime)) {
-    alert("End time must be after start time");
-    return;
-  }
-
- const newTask = {
-    name,
-    dueDate,
-    startTime,
-    endTime
-  };
-  if (hasTimeConflict(newTask)) {
-  alert("Time overlaps with another task ❌");
-  return;
- }
-  await fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(newTask)
-  });
-
-  loadTodos();
-  nameInput.value = '';
-  dateInput.value = '';
-  startInput.value = '';
-  endInput.value = '';
-}
-
-function isToday(dateStr){
-  const today = new Date();
-  const localDate = today.getFullYear() + "-" +
-    String(today.getMonth()+1).padStart(2,'0') + "-" +
-    String(today.getDate()).padStart(2,'0');
-
-  return localDate === dateStr;
-}
-setInterval(loadTodos, 60000);
+// ===============================
+// BUTTON EVENTS
+// ===============================
+document.querySelector(".signup-btn").onclick = signup;
+document.querySelector(".login-btn").onclick = login;
+document.querySelector(".logout-btn").onclick = logout;
+document.querySelector(".js-add-button").onclick = addTodo;
