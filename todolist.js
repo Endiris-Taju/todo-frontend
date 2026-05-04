@@ -5,29 +5,18 @@ const API_SIGNUP = `${API_BASE}/signup`;
 
 let todoList = [];
 
-
+// DOM
 const authBox = document.getElementById("authBox");
 const appBox = document.getElementById("appBox");
 
-function checkAuth() {
-  const token = localStorage.getItem("token");
-
-  if (token) {
-    document.querySelector(".auth-box").style.display = "none";
-    document.querySelector(".app-box").style.display = "block";
-    loadTodos();
-  } else {
-    document.querySelector(".auth-box").style.display = "block";
-    document.querySelector(".app-box").style.display = "none";
-  }
-}
+// ================= AUTH =================
 function saveToken(token) {
   localStorage.setItem("token", token);
 }
 
-// getToken() {
-  //return localStorage.getItem("token");
-//}
+function getToken() {
+  return localStorage.getItem("token");
+}
 
 function logout() {
   localStorage.removeItem("token");
@@ -45,6 +34,7 @@ function authHeaders() {
   };
 }
 
+// ================= UI =================
 function updateUI() {
   if (isLoggedIn()) {
     authBox.style.display = "none";
@@ -56,41 +46,73 @@ function updateUI() {
   }
 }
 
-updateUI();
+// ================= AUTH REQUESTS =================
+async function signup(e) {
+  e.preventDefault();
 
-async function loadTodos() {
-  try {
-    const res = await fetch(API_TODOS, {
-      headers: authHeaders()
-    });
+  const email = document.getElementById("signupEmail").value;
+  const password = document.getElementById("signupPassword").value;
 
-    if (res.status === 401) {
-      logout();
-      return;
-    }
+  const res = await fetch(API_SIGNUP, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password })
+  });
 
-    const data = await res.json();
+  const data = await res.json();
 
-    if (!Array.isArray(data)) {
-      console.error("Backend error:", data);
-      todoList = [];
-      return;
-    }
-
-    todoList = data;
-    renderTodoList();
-
-  } catch (err) {
-    console.error("Fetch error:", err);
+  if (data.token) {
+    saveToken(data.token);
+    updateUI();
+  } else {
+    alert(data.error || "Signup failed");
   }
 }
 
+async function login(e) {
+  e.preventDefault();
+
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPassword").value;
+
+  const res = await fetch(API_LOGIN, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password })
+  });
+
+  const data = await res.json();
+
+  if (data.token) {
+    saveToken(data.token);
+    updateUI();
+  } else {
+    alert(data.error || "Login failed");
+  }
+}
+
+// ================= TODOS =================
+async function loadTodos() {
+  const res = await fetch(API_TODOS, {
+    headers: authHeaders()
+  });
+
+  const data = await res.json();
+
+  if (!Array.isArray(data)) {
+    todoList = [];
+    return;
+  }
+
+  todoList = data;
+  renderTodoList();
+}
 
 async function addTodo() {
-  const name = document.querySelector('.js-name-input').value.trim();
-  const dueDate = document.querySelector('.js-due-date-input').value;
-  const startTime = document.querySelector('.js-start-time-input').value;
-  const endTime = document.querySelector('.js-end-time-input').value;
+  const name = document.querySelector(".js-name-input").value;
+  const dueDate = document.querySelector(".js-due-date-input").value;
+  const startTime = document.querySelector(".js-start-time-input").value;
+  const endTime = document.querySelector(".js-end-time-input").value;
 
   if (!name || !dueDate || !startTime || !endTime) {
     alert("Fill all fields");
@@ -106,7 +128,6 @@ async function addTodo() {
   loadTodos();
 }
 
-
 async function deleteTodo(id) {
   await fetch(`${API_TODOS}/${id}`, {
     method: "DELETE",
@@ -116,74 +137,43 @@ async function deleteTodo(id) {
   loadTodos();
 }
 
-
-function formatTime(time24) {
-  if (!time24) return "";
-
-  const [hour, minute] = time24.split(':');
-  const h = Number(hour);
-  const ampm = h >= 12 ? 'PM' : 'AM';
-  const hour12 = h % 12 || 12;
-
-  return `${hour12}:${minute} ${ampm}`;
+// ================= RENDER =================
+function formatTime(t) {
+  if (!t) return "";
+  const [h, m] = t.split(":");
+  const hour = +h % 12 || 12;
+  return `${hour}:${m}`;
 }
-
-function formatDate(dateStr) {
-  return new Date(dateStr).toLocaleDateString();
-}
-
 
 function renderTodoList() {
   let html = "";
 
-  todoList.sort((a, b) => {
-    return new Date(`${a.dueDate}T${a.startTime}`) -
-           new Date(`${b.dueDate}T${b.startTime}`);
-  });
+  todoList.sort((a, b) =>
+    new Date(`${a.dueDate}T${a.startTime}`) -
+    new Date(`${b.dueDate}T${b.startTime}`)
+  );
 
   for (const task of todoList) {
     html += `
       <div class="todo-row">
         <div><b>${task.name}</b></div>
-        <div>${formatDate(task.dueDate)}</div>
+        <div>${task.dueDate}</div>
         <div>${formatTime(task.startTime)} - ${formatTime(task.endTime)}</div>
-        <button class="delete-button" data-id="${task.id}">
-          Delete
-        </button>
+        <button onclick="deleteTodo('${task.id}')">Delete</button>
       </div>
     `;
   }
 
   document.querySelector(".js-todo-list").innerHTML = html;
 }
-async function signup() {
-  const email = document.getElementById("signupEmail").value;
-  const password = document.getElementById("signupPassword").value;
 
-  const res = await fetch(`${API_URL}/auth/signup`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password })
-  });
-
-  const data = await res.json();
-  alert(data.message || data.error);
-}
-
-async function login() {
-  const email = document.getElementById("loginEmail").value;
-  const password = document.getElementById("loginPassword").value;
-
-  const res = await fetch(`${API_URL}/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password })
-  });
-
-  const data = await res.json();
-  localStorage.setItem("token", data.token);
-  startApp();
-}
+// ================= INIT =================
 document.addEventListener("DOMContentLoaded", () => {
-  checkAuth();
+  document.getElementById("signupForm").addEventListener("submit", signup);
+  document.getElementById("loginForm").addEventListener("submit", login);
+
+  document.querySelector(".logout-btn").addEventListener("click", logout);
+  document.querySelector(".js-add-button").addEventListener("click", addTodo);
+
+  updateUI();
 });
