@@ -1,8 +1,8 @@
 
 let todoList = [];
-
+const API_URL = "https://todo-backend-dlui.onrender.com/todos";
 async function loadTodos(){
-  const res = await fetch("https://todo-backend.onrender.com/todos");
+  const res = await fetch(API_URL);
   todoList = await res.json();
   renderTodoList();
 }
@@ -70,7 +70,7 @@ document.querySelector('.js-todo-list').addEventListener('click', async (e) => {
   if (e.target.classList.contains('delete-button')) {
     const id = e.target.dataset.id;
 
-    await fetch(`https://todo-backend.onrender.com/todos/${id}`, {
+    await fetch(`${API_URL}/${id}`, {
       method: "DELETE"
     });
 
@@ -134,7 +134,7 @@ async function addTodo(){
   alert("Time overlaps with another task ❌");
   return;
  }
-  await fetch("https://todo-backend.onrender.com/todos", {
+  await fetch(API_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(newTask)
