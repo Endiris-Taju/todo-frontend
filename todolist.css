@@ -1,193 +1,129 @@
-
-*{
-  box-sizing: border-box;
-}
-
 body{
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial;
-  background: linear-gradient(135deg,#eef2f7,#f8fbff);
-  padding: 30px;
+  font-family: "Inter", sans-serif;
+  background: linear-gradient(120deg,#eef2f7,#f7fbff);
+  margin:0;
   color:#2c3e50;
 }
 
-/* CENTER APP */
+/* APP CENTER */
 .app-container{
-  max-width: 900px;
+  max-width:900px;
   margin:auto;
 }
 
-/* ===== AUTH BOX ===== */
+/* AUTH */
 .auth-box{
-  max-width:420px;
+  width:380px;
   margin:60px auto;
   background:white;
   padding:30px;
-  border-radius:18px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.08);
+  border-radius:20px;
+  box-shadow:0 15px 40px rgba(0,0,0,0.08);
   text-align:center;
-}
-
-.auth-box h1{
-  margin-bottom:10px;
-}
-
-.auth-box h2{
-  margin-top:25px;
+  animation: fadeIn 0.3s ease;
 }
 
 .auth-box input{
   width:100%;
   padding:12px;
-  margin-top:10px;
-  border:1px solid #dcdde1;
-  border-radius:8px;
+  margin:8px 0;
+  border:1px solid #e1e5ea;
+  border-radius:10px;
+  outline:none;
+  transition:0.2s;
+}
+
+.auth-box input:focus{
+  border-color:#27ae60;
+  box-shadow:0 0 0 3px rgba(39,174,96,0.1);
 }
 
 .auth-box button{
   width:100%;
   padding:12px;
-  margin-top:10px;
   border:none;
-  border-radius:8px;
-  background:#2ecc71;
+  border-radius:10px;
+  background:#27ae60;
   color:white;
-  font-weight:bold;
+  font-weight:600;
   cursor:pointer;
 }
 
 .auth-box button:hover{
-  background:#27ae60;
+  background:#219150;
 }
 
-/* ===== HEADER ===== */
+/* HEADER */
 .header{
   position:sticky;
   top:0;
-  background:#f8fbff;
-  padding-bottom:15px;
-  z-index:100;
+  background:#f7fbff;
+  padding:20px 0;
 }
 
 .header h1{
   text-align:center;
-  margin-bottom:10px;
 }
 
-.logout-btn{
-  float:right;
-  border:none;
-  background:#e74c3c;
-  color:white;
-  padding:8px 14px;
-  border-radius:8px;
-  cursor:pointer;
-}
-
-.logout-btn:hover{
-  background:#c0392b;
-}
-
-/* ===== INPUT GRID ===== */
+/* GRID */
 .todo-input-grid{
   display:grid;
-  grid-template-columns: 2.5fr 1.2fr 1fr 1fr 120px;
+  grid-template-columns:2fr 1fr 1fr 1fr 120px;
   gap:10px;
   margin:20px 0;
 }
 
 .todo-input-grid input{
   padding:12px;
-  border:1px solid #dcdde1;
-  border-radius:8px;
+  border-radius:10px;
+  border:1px solid #e1e5ea;
 }
 
+/* BUTTON */
 .add-button{
-  border:none;
   background:#27ae60;
   color:white;
-  font-weight:bold;
-  border-radius:8px;
+  border:none;
+  border-radius:10px;
+  font-weight:600;
   cursor:pointer;
 }
 
-.add-button:hover{
-  background:#219150;
-}
-
-/* ===== TODO LIST ===== */
-.js-todo-list{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
-
+/* CARD */
 .todo-row{
   display:grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 80px;
+  grid-template-columns:2fr 1fr 1fr 1fr 80px;
   background:white;
-  padding:14px;
+  padding:15px;
   border-radius:14px;
-  box-shadow:0 4px 14px rgba(0,0,0,0.05);
-  align-items:center;
+  box-shadow:0 6px 18px rgba(0,0,0,0.05);
+  transition:0.2s;
 }
 
 .todo-row:hover{
-  transform:translateY(-2px);
+  transform:translateY(-3px);
 }
 
-.start-time,.end-time{
-  font-weight:600;
-}
-
+/* DELETE */
 .delete-button{
-  border:none;
   background:#e74c3c;
+  border:none;
   color:white;
-  padding:8px;
-  border-radius:8px;
+  border-radius:10px;
   cursor:pointer;
 }
 
-.today-task{
-  color:#f39c12;
-  font-weight:bold;
-  margin-left:6px;
-}
-
-/* ===== TABLET ===== */
+/* RESPONSIVE */
 @media(max-width:768px){
   .todo-input-grid{
     grid-template-columns:1fr 1fr;
-    background:white;
-    padding:15px;
-    border-radius:14px;
   }
 
-  .add-button{grid-column:span 2;}
+  .add-button{
+    grid-column:span 2;
+  }
 
   .todo-row{
     grid-template-columns:1fr;
-    gap:5px;
-  }
-
-  .delete-button{
-    width:100%;
-    margin-top:10px;
-  }
-}
-
-/* ===== PHONE ===== */
-@media(max-width:480px){
-  body{padding:14px;}
-
-  .auth-box{margin-top:20px}
-
-  .todo-row{
-    padding:12px;
-  }
-
-  .task-date,.start-time,.end-time{
-    font-size:13px;
-    color:#7f8c8d;
   }
 }
