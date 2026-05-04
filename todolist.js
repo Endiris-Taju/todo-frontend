@@ -5,15 +5,11 @@ const API_SIGNUP = `${API_BASE}/signup`;
 
 let todoList = [];
 
-// ===============================
-// DOM ELEMENTS
-// ===============================
+
 const authBox = document.getElementById("authBox");
 const appBox = document.getElementById("appBox");
 
-document.addEventListener("DOMContentLoaded", () => {
-  startApp();
-});
+document.addEventListener("DOMContentLoaded", startApp);
 function saveToken(token) {
   localStorage.setItem("token", token);
 }
@@ -210,17 +206,41 @@ function renderTodoList() {
   document.querySelector(".js-todo-list").innerHTML = html;
 }
 
-function startApp() {
-  updateUI();
+async function signup() {
+  const email = document.getElementById("signupEmail").value;
+  const password = document.getElementById("signupPassword").value;
 
-  document.querySelector(".signup-btn").addEventListener("click", signup);
-  document.querySelector(".login-btn").addEventListener("click", login);
-  document.querySelector(".logout-btn").addEventListener("click", logout);
-  document.querySelector(".js-add-button").addEventListener("click", addTodo);
-
-  document.querySelector(".js-todo-list").addEventListener("click", (e) => {
-    if (e.target.classList.contains("delete-button")) {
-      deleteTodo(e.target.dataset.id);
-    }
+  const res = await fetch(API_SIGNUP, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password })
   });
+
+  const data = await res.json();
+
+  if (data.token) {
+    saveToken(data.token);
+    updateUI();
+  } else {
+    alert(data.error || "Signup failed");
+  }
+}
+async function login() {
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPassword").value;
+
+  const res = await fetch(API_LOGIN, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password })
+  });
+
+  const data = await res.json();
+
+  if (data.token) {
+    saveToken(data.token);
+    updateUI();
+  } else {
+    alert(data.error || "Login failed");
+  }
 }
