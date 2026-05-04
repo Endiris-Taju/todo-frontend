@@ -15,7 +15,13 @@
   <form id="signupForm">
     <h2>Signup</h2>
     <input id="signupEmail" placeholder="Email" required>
-    <input id="signupPassword" type="password" placeholder="Password" required>
+   <input 
+  id="signupPassword"
+  class="signup-password"
+  type="password"
+  placeholder="Password"
+  autocomplete="new-password"
+  required>
     <button type="submit">Signup</button>
   </form>
 
@@ -25,7 +31,13 @@
   <form id="loginForm">
     <h2>Login</h2>
     <input id="loginEmail" placeholder="Email" required>
-    <input id="loginPassword" type="password" required>
+  <input 
+  id="loginPassword"
+  class="login-password"
+  type="password"
+  placeholder="Password"
+  autocomplete="current-password"
+  required>
     <button type="submit">Login</button>
   </form>
 

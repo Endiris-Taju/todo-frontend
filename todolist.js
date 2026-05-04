@@ -11,9 +11,9 @@ let todoList = [];
 const authBox = document.getElementById("authBox");
 const appBox = document.getElementById("appBox");
 
-// ===============================
-// TOKEN HELPERS
-// ===============================
+document.addEventListener("DOMContentLoaded", () => {
+  startApp();
+});
 function saveToken(token) {
   localStorage.setItem("token", token);
 }
@@ -210,18 +210,17 @@ function renderTodoList() {
   document.querySelector(".js-todo-list").innerHTML = html;
 }
 
-// ===============================
-// EVENT LISTENERS (MODERN WAY)
-// ===============================
-document.querySelector(".signup-btn").addEventListener("click", signup);
-document.querySelector(".login-btn").addEventListener("click", login);
-document.querySelector(".logout-btn").addEventListener("click", logout);
-document.querySelector(".js-add-button").addEventListener("click", addTodo);
+function startApp() {
+  updateUI();
 
-// DELETE via event delegation (IMPORTANT FIX)
-document.querySelector(".js-todo-list").addEventListener("click", (e) => {
-  if (e.target.classList.contains("delete-button")) {
-    const id = e.target.dataset.id;
-    deleteTodo(id);
-  }
-});
+  document.querySelector(".signup-btn").addEventListener("click", signup);
+  document.querySelector(".login-btn").addEventListener("click", login);
+  document.querySelector(".logout-btn").addEventListener("click", logout);
+  document.querySelector(".js-add-button").addEventListener("click", addTodo);
+
+  document.querySelector(".js-todo-list").addEventListener("click", (e) => {
+    if (e.target.classList.contains("delete-button")) {
+      deleteTodo(e.target.dataset.id);
+    }
+  });
+}
