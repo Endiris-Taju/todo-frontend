@@ -2,9 +2,24 @@
 let todoList = [];
 const API_URL = "https://todo-backend-dlui.onrender.com/todos";
 async function loadTodos(){
-  const res = await fetch(API_URL);
-  todoList = await res.json();
-  renderTodoList();
+  try {
+    const res = await fetch(API_URL);
+    const data = await res.json();
+
+    // safety check
+    if (!Array.isArray(data)) {
+      console.error("Backend error:", data);
+      todoList = [];
+      return;
+    }
+
+    todoList = data;
+    renderTodoList();
+
+  } catch (err) {
+    console.error("Fetch failed:", err);
+    todoList = [];
+  }
 }
 loadTodos();
 
