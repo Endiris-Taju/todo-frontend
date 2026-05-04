@@ -9,14 +9,25 @@ let todoList = [];
 const authBox = document.getElementById("authBox");
 const appBox = document.getElementById("appBox");
 
-document.addEventListener("DOMContentLoaded", startApp);
+function checkAuth() {
+  const token = localStorage.getItem("token");
+
+  if (token) {
+    document.querySelector(".auth-box").style.display = "none";
+    document.querySelector(".app-box").style.display = "block";
+    loadTodos();
+  } else {
+    document.querySelector(".auth-box").style.display = "block";
+    document.querySelector(".app-box").style.display = "none";
+  }
+}
 function saveToken(token) {
   localStorage.setItem("token", token);
 }
 
-function getToken() {
-  return localStorage.getItem("token");
-}
+// getToken() {
+  //return localStorage.getItem("token");
+//}
 
 function logout() {
   localStorage.removeItem("token");
@@ -173,3 +184,6 @@ async function login() {
   localStorage.setItem("token", data.token);
   startApp();
 }
+document.addEventListener("DOMContentLoaded", () => {
+  checkAuth();
+});
