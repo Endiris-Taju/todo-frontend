@@ -185,4 +185,21 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   updateUI();
+
+  // 🌙 DARK MODE
+const themeToggle = document.getElementById("themeToggle");
+
+function setTheme(theme){
+  document.body.setAttribute("data-theme", theme);
+  localStorage.setItem("theme", theme);
+  themeToggle.textContent = theme === "dark" ? "☀️ Light" : "🌙 Dark";
+}
+
+// load saved theme
+setTheme(localStorage.getItem("theme") || "light");
+
+themeToggle.onclick = () => {
+  const current = document.body.getAttribute("data-theme");
+  setTheme(current === "dark" ? "light" : "dark");
+};
 });
