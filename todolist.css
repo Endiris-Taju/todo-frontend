@@ -25,7 +25,7 @@ body{
   transition: 0.3s;
 }
 
-/* ===== AUTH BOX ===== */
+
 .auth-box{
   width:380px;
   margin:70px auto;
@@ -85,7 +85,7 @@ body{
   font-weight:600;
 }
 
-/* ===== HEADER ===== */
+
 .header{
   display:flex;
   justify-content:space-between;
@@ -116,13 +116,13 @@ body{
   color:white;
 }
 
-/* ===== CONTAINER ===== */
+
 .app-container{
   max-width:900px;
   margin:auto;
 }
 
-/* ===== INPUT GRID ===== */
+
 .todo-input-grid{
   display:grid;
   grid-template-columns:2fr 1fr 1fr 1fr 120px;
@@ -152,7 +152,7 @@ body{
   transform:translateY(-2px);
 }
 
-/* ===== TODO CARD ===== */
+
 .todo-row{
   display:grid;
   grid-template-columns:2fr 1fr 1fr 120px;
@@ -179,13 +179,13 @@ body{
   cursor:pointer;
 }
 
-/* ===== ANIMATION ===== */
+
 @keyframes fadeIn{
   from{opacity:0; transform:translateY(10px);}
   to{opacity:1; transform:translateY(0);}
 }
 
-/* ===== MOBILE ===== */
+/* mobile */
 @media(max-width:768px){
   .todo-input-grid{
     grid-template-columns:1fr 1fr;

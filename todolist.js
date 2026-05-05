@@ -5,11 +5,11 @@ const API_SIGNUP = `${API_BASE}/signup`;
 
 let todoList = [];
 
-// DOM
+// dom
 const authBox = document.getElementById("authBox");
 const appBox = document.getElementById("appBox");
 
-// ================= AUTH =================
+// auth
 function saveToken(token) {
   localStorage.setItem("token", token);
 }
@@ -30,7 +30,7 @@ function authHeaders() {
   };
 }
 
-// ================= UI =================
+// ui
 function updateUI() {
   if (isLoggedIn()) {
     authBox.style.display = "none";
@@ -42,7 +42,7 @@ function updateUI() {
   }
 }
 
-// ================= AUTH =================
+// auth
 async function signup(e) {
   e.preventDefault();
 
@@ -87,7 +87,7 @@ async function login(e) {
   }
 }
 
-// ================= TODOS =================
+//todos
 async function loadTodos() {
   const res = await fetch(API_TODOS, { headers: authHeaders() });
   const data = await res.json();
@@ -125,7 +125,7 @@ async function deleteTodo(id) {
   loadTodos();
 }
 
-// ================= RENDER =================
+//render
 function formatTime(t) {
   if (!t) return "";
   const [h, m] = t.split(":");
@@ -161,7 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelector(".logout-btn").addEventListener("click", logout);
   document.querySelector(".js-add-button").addEventListener("click", addTodo);
 
-  // ⭐ switch forms
+  //  switch forms
   const signupFormEl = document.getElementById("signupForm");
   const loginFormEl = document.getElementById("loginForm");
 
@@ -186,13 +186,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   updateUI();
 
-  // 🌙 DARK MODE
+  //  DARK MODE
 const themeToggle = document.getElementById("themeToggle");
 
 function setTheme(theme){
   document.body.setAttribute("data-theme", theme);
   localStorage.setItem("theme", theme);
-  themeToggle.textContent = theme === "dark" ? "☀️ Light" : "🌙 Dark";
+  themeToggle.textContent = theme === "dark" ? " Light" : " Dark";
 }
 
 // load saved theme
