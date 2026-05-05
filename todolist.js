@@ -13,20 +13,16 @@ const appBox = document.getElementById("appBox");
 function saveToken(token) {
   localStorage.setItem("token", token);
 }
-
 function getToken() {
   return localStorage.getItem("token");
 }
-
 function logout() {
   localStorage.removeItem("token");
   location.reload();
 }
-
 function isLoggedIn() {
   return !!getToken();
 }
-
 function authHeaders() {
   return {
     "Content-Type": "application/json",
@@ -46,12 +42,12 @@ function updateUI() {
   }
 }
 
-// ================= AUTH REQUESTS =================
+// ================= AUTH =================
 async function signup(e) {
   e.preventDefault();
 
-  const email = document.getElementById("signupEmail").value;
-  const password = document.getElementById("signupPassword").value;
+  const email = signupEmail.value;
+  const password = signupPassword.value;
 
   const res = await fetch(API_SIGNUP, {
     method: "POST",
@@ -72,8 +68,8 @@ async function signup(e) {
 async function login(e) {
   e.preventDefault();
 
-  const email = document.getElementById("loginEmail").value;
-  const password = document.getElementById("loginPassword").value;
+  const email = loginEmail.value;
+  const password = loginPassword.value;
 
   const res = await fetch(API_LOGIN, {
     method: "POST",
@@ -93,16 +89,9 @@ async function login(e) {
 
 // ================= TODOS =================
 async function loadTodos() {
-  const res = await fetch(API_TODOS, {
-    headers: authHeaders()
-  });
-
+  const res = await fetch(API_TODOS, { headers: authHeaders() });
   const data = await res.json();
-
-  if (!Array.isArray(data)) {
-    todoList = [];
-    return;
-  }
+  if (!Array.isArray(data)) return;
 
   todoList = data;
   renderTodoList();
@@ -133,7 +122,6 @@ async function deleteTodo(id) {
     method: "DELETE",
     headers: authHeaders()
   });
-
   loadTodos();
 }
 
@@ -159,7 +147,7 @@ function renderTodoList() {
         <div><b>${task.name}</b></div>
         <div>${task.dueDate}</div>
         <div>${formatTime(task.startTime)} - ${formatTime(task.endTime)}</div>
-        <button onclick="deleteTodo('${task.id}')">Delete</button>
+        <button class="delete-btn" data-id="${task.id}">Delete</button>
       </div>
     `;
   }
@@ -167,13 +155,34 @@ function renderTodoList() {
   document.querySelector(".js-todo-list").innerHTML = html;
 }
 
-// ================= INIT =================
 document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("signupForm").addEventListener("submit", signup);
-  document.getElementById("loginForm").addEventListener("submit", login);
-
+  signupForm.addEventListener("submit", signup);
+  loginForm.addEventListener("submit", login);
   document.querySelector(".logout-btn").addEventListener("click", logout);
   document.querySelector(".js-add-button").addEventListener("click", addTodo);
+
+  // ⭐ switch forms
+  const signupFormEl = document.getElementById("signupForm");
+  const loginFormEl = document.getElementById("loginForm");
+
+  document.getElementById("showLogin").onclick = (e) => {
+    e.preventDefault();
+    signupFormEl.style.display = "none";
+    loginFormEl.style.display = "block";
+  };
+
+  document.getElementById("showSignup").onclick = (e) => {
+    e.preventDefault();
+    signupFormEl.style.display = "block";
+    loginFormEl.style.display = "none";
+  };
+
+  // delete delegation
+  document.querySelector(".js-todo-list").addEventListener("click", (e) => {
+    if (e.target.classList.contains("delete-btn")) {
+      deleteTodo(e.target.dataset.id);
+    }
+  });
 
   updateUI();
 });
