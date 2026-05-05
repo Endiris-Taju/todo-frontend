@@ -96,7 +96,32 @@ async function loadTodos() {
   todoList = data;
   renderTodoList();
 }
+// limit overlap
+function toMinutes(timeStr){
+  const [h,m] = timeStr.split(":").map(Number);
+  return h * 60 + m;
+}
 
+function hasTimeConflict(newTask){
+  const newStart = toMinutes(newTask.startTime);
+  const newEnd = toMinutes(newTask.endTime);
+
+  for(const task of todoList){
+
+    // only compare SAME DATE
+    if(task.dueDate !== newTask.dueDate) continue;
+
+    const start = toMinutes(task.startTime);
+    const end = toMinutes(task.endTime);
+
+    // overlap condition
+    if(newStart < end && newEnd > start){
+      return true;
+    }
+  }
+
+  return false;
+}
 async function addTodo() {
   const name = document.querySelector(".js-name-input").value;
   const dueDate = document.querySelector(".js-due-date-input").value;
@@ -108,11 +133,32 @@ async function addTodo() {
     return;
   }
 
+  //  end must be after start
+  if(toMinutes(endTime) <= toMinutes(startTime)){
+    alert("End time must be after start time");
+    return;
+  }
+
+  const newTask = { name, dueDate, startTime, endTime };
+
+  //  OVERLAP CHECK
+  if(hasTimeConflict(newTask)){
+    alert("Time overlaps with another task!");
+    return;
+  }
+
+  // save if safe
   await fetch(API_TODOS, {
     method: "POST",
     headers: authHeaders(),
-    body: JSON.stringify({ name, dueDate, startTime, endTime })
+    body: JSON.stringify(newTask)
   });
+
+  // clear inputs
+  document.querySelector(".js-name-input").value = "";
+  document.querySelector(".js-due-date-input").value = "";
+  document.querySelector(".js-start-time-input").value = "";
+  document.querySelector(".js-end-time-input").value = "";
 
   loadTodos();
 }
